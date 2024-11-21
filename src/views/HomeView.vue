@@ -25,61 +25,43 @@
                           role="tab"
                           aria-controls="nav-home"
                           aria-selected="true"
-                          >All</a
-                        >
+                          >All
+                        </a>
                         <a
+                          v-for="category of categories"
+                          :key="category.id"
                           class="nav-item nav-link"
-                          id="nav-profile-tab"
+                          id="nav-home-tab"
                           data-toggle="tab"
-                          href=""
+                          href="details.htmlnav-home"
                           role="tab"
-                          aria-controls="nav-profile"
-                          aria-selected="false"
-                          >Lifestyle</a
-                        >
-                        <a
-                          class="nav-item nav-link"
-                          id="nav-contact-tab"
-                          data-toggle="tab"
-                          href=""
-                          role="tab"
-                          aria-controls="nav-contact"
-                          aria-selected="false"
-                          >Travel</a
-                        >
-                        <a
-                          class="nav-item nav-link"
-                          id="nav-last-tab"
-                          data-toggle="tab"
-                          href=""
-                          role="tab"
-                          aria-controls="nav-contact"
-                          aria-selected="false"
-                          >Fashion</a
-                        >
-                        <a
-                          class="nav-item nav-link"
-                          id="nav-Sports"
-                          data-toggle="tab"
-                          href=""
-                          role="tab"
-                          aria-controls="nav-contact"
-                          aria-selected="false"
-                          >Sports</a
-                        >
-                        <a
-                          class="nav-item nav-link"
-                          id="nav-technology"
-                          data-toggle="tab"
-                          href="details.htmlnav-techno"
-                          role="tab"
-                          aria-controls="nav-contact"
-                          aria-selected="false"
-                          >Technology</a
-                        >
+                          aria-controls="nav-home"
+                          aria-selected="true"
+                          >{{ category.name }}
+                        </a>
                       </div>
                     </nav>
                     <!--End Nav Button  -->
+                  </div>
+                </div>
+              </div>
+              <!-- search bar -->
+              <div class="row">
+                <div class="col-3 offset-9">
+                  <div class="d-flex my-2 justify-content-around">
+                    <input
+                      type="text"
+                      name="search"
+                      class="p-1 form-control"
+                      placeholder="Search"
+                      v-model="searchKey"
+                      @keyup.enter="searchCategory"
+                    />
+
+                    <div class="pt-1" @click="searchCategory">
+                      <i class="fas fa-search"></i>
+                    </div>
+                    <!-- <button class="btn btn-sm btn-secondary">Search</button> -->
                   </div>
                 </div>
               </div>
@@ -179,6 +161,7 @@ export default {
     const error = ref("");
     const categories = ref([]);
     const posts = ref([]);
+    const searchKey = ref("");
 
     const getData = async () => {
       try {
@@ -186,7 +169,7 @@ export default {
         if (res.statusText !== "OK") {
           throw new Error("fail category data");
         }
-        categories.value = res.data;
+        categories.value = res.data.data;
       } catch (err) {
         error.value = err.message;
         console.log(err.message);
@@ -203,13 +186,28 @@ export default {
               i
             ].image = `http://localhost:8000/postsImage/${res.data.data[i].image}`;
           } else {
-            res.data.data[
-              i
-            ].image = `http://localhost:8000/postsImage/default.png`;
+            res.data.data[i].image = `http://localhost:8000/postsImage/default.png`;
           }
         }
         posts.value = res.data.data;
       }
+    };
+
+    // backend filter
+    const searchCategory = async () => {
+      const res = await axios.post("http://localhost:8000/api/posts/search", {
+        key: searchKey.value,
+      });
+      for (let i = 0; i < res.data.data.length; i++) {
+        if (res.data.data[i].image != null) {
+          res.data.data[
+            i
+          ].image = `http://localhost:8000/postsImage/${res.data.data[i].image}`;
+        } else {
+          res.data.data[i].image = `http://localhost:8000/postsImage/default.png`;
+        }
+      }
+      posts.value = res.data.data;
     };
 
     onMounted(() => {
@@ -217,7 +215,7 @@ export default {
       getPostsData();
     });
 
-    return { getData, error, categories, getPostsData, posts };
+    return { getData, error, categories, getPostsData, posts, searchKey, searchCategory };
   },
 };
 </script>
