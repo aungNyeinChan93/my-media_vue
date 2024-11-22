@@ -25,6 +25,7 @@
                           role="tab"
                           aria-controls="nav-home"
                           aria-selected="true"
+                          @click="categorySearch(null)"
                           >All
                         </a>
                         <a
@@ -37,6 +38,7 @@
                           role="tab"
                           aria-controls="nav-home"
                           aria-selected="true"
+                          @click="categorySearch(category.name)"
                           >{{ category.name }}
                         </a>
                       </div>
@@ -52,13 +54,13 @@
                     <input
                       type="text"
                       name="search"
-                      class="p-1 form-control"
+                      class="p-1 border-0 hover:border-1"
                       placeholder="Search"
                       v-model="searchKey"
-                      @keyup.enter="searchCategory"
+                      @keyup.enter="searchPosts"
                     />
 
-                    <div class="pt-1" @click="searchCategory">
+                    <div class="pt-1" @click="searchPosts">
                       <i class="fas fa-search"></i>
                     </div>
                     <!-- <button class="btn btn-sm btn-secondary">Search</button> -->
@@ -80,7 +82,15 @@
                       <div class="whats-news-caption">
                         <div class="row">
                           <div
-                            class="col-lg-6 col-md-6"
+                            v-if="!posts.length"
+                            class="min-vh-100 mx-auto d-flex align-items-center"
+                            style="height: 80vh"
+                          >
+                            <div class="alert alert-danger">Empty Posts</div>
+                          </div>
+                          <div
+                            v-show="posts.length"
+                            class="col-lg-4 col-md-6"
                             v-for="post of posts"
                             :key="post.id"
                           >
@@ -178,7 +188,7 @@ export default {
 
     const getPostsData = async () => {
       const res = await axios.get("http://localhost:8000/api/posts");
-      console.log(res.data);
+      // console.log(res.data);
       if (res.data.mess == "success") {
         for (let i = 0; i < res.data.data.length; i++) {
           if (res.data.data[i].image != null) {
@@ -194,7 +204,7 @@ export default {
     };
 
     // backend filter
-    const searchCategory = async () => {
+    const searchPosts = async () => {
       const res = await axios.post("http://localhost:8000/api/posts/search", {
         key: searchKey.value,
       });
@@ -210,12 +220,37 @@ export default {
       posts.value = res.data.data;
     };
 
+    const categorySearch = async (category) => {
+      const res = await axios.post(`http://localhost:8000/api/categories/search`, {
+        key: category,
+      });
+      for (let i = 0; i < res.data.data.length; i++) {
+        if (res.data.data[i].image != null) {
+          res.data.data[
+            i
+          ].image = `http://localhost:8000/postsImage/${res.data.data[i].image}`;
+        } else {
+          res.data.data[i].image = "http://localhost:8000/postsImage/default.png";
+        }
+        posts.value = res.data.data;
+      }
+    };
+
     onMounted(() => {
       getData();
       getPostsData();
     });
 
-    return { getData, error, categories, getPostsData, posts, searchKey, searchCategory };
+    return {
+      getData,
+      error,
+      categories,
+      getPostsData,
+      posts,
+      searchKey,
+      searchPosts,
+      categorySearch,
+    };
   },
 };
 </script>
