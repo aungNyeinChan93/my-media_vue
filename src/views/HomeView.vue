@@ -81,6 +81,7 @@
                     >
                       <div class="whats-news-caption">
                         <div class="row">
+                          <!-- empty posts -->
                           <div
                             v-if="!posts.length"
                             class="min-vh-100 mx-auto d-flex align-items-center"
@@ -88,6 +89,8 @@
                           >
                             <div class="alert alert-danger">Empty Posts</div>
                           </div>
+                          <!-- empty posts end -->
+
                           <div
                             v-show="posts.length"
                             class="col-lg-4 col-md-6"
@@ -102,6 +105,11 @@
                                 <span class="color1">{{ post.title }}</span>
                                 <h4>
                                   <a href="details.html">{{ post.title }}</a>
+                                  <router-link
+                                    :to="{ name: 'postDetail', params: { id: post.id } }"
+                                  >
+                                    {{ post.title }}
+                                  </router-link>
                                 </h4>
                               </div>
                             </div>
@@ -159,6 +167,7 @@
 </template>
 
 <script>
+import router from "@/router";
 import axios from "axios";
 import { onMounted, ref } from "vue";
 
@@ -236,6 +245,10 @@ export default {
       }
     };
 
+    // const postDetail = (id) => {
+    //   router.push({ name: "postDetail", params: { postId: id } });
+    // };
+
     onMounted(() => {
       getData();
       getPostsData();
@@ -250,6 +263,7 @@ export default {
       searchKey,
       searchPosts,
       categorySearch,
+      // postDetail,
     };
   },
 };
