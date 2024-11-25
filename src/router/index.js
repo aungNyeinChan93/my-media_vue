@@ -2,6 +2,8 @@ import { createRouter, createWebHashHistory } from "vue-router";
 import HomeView from "../views/HomeView.vue";
 import TestView from "@/views/TestView.vue";
 import PostDetailView from "@/views/PostDetailView.vue";
+import LoginView from "@/views/LoginView.vue";
+import LogoutAction from "@/views/LogoutAction.vue";
 
 const routes = [
   {
@@ -19,6 +21,16 @@ const routes = [
     name: "postDetail",
     component: PostDetailView,
     props: true,
+  },
+  {
+    path: "/login",
+    name: "login",
+    component: LoginView,
+  },
+  {
+    path: "/logout",
+    name: "logoutAction",
+    component: LogoutAction,
   },
 ];
 

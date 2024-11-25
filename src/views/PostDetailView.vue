@@ -4,13 +4,24 @@
       <!-- About US Start -->
       <div class="about-area">
         <div class="container">
-          <!-- back btn -->
+          <!-- login section -->
           <div class="row">
-            <div class="col-2">
-              <router-link class="btn my-2" :to="{ name: 'home' }">Back</router-link>
+            <div class="col-lg-12">
+              <div class="d-sm-block d-lg-flex justify-content-between my-3">
+                <div class="btn btn-blue">
+                  <router-link :to="{ name: 'home' }">Home</router-link>
+                </div>
+                <div class="btn btn-blue" v-if="!getToken">
+                  <router-link :to="{ name: 'login' }">Login</router-link>
+                </div>
+                <div class="btn btn-blue" v-if="getToken">
+                  <router-link :to="{ name: 'logoutAction' }">Logout</router-link>
+                </div>
+              </div>
             </div>
           </div>
-          <!-- back btn end  -->
+          <!-- login section end -->
+
           <div class="row">
             <div class="col-lg-8">
               <!-- Trending Tittle -->
@@ -77,12 +88,21 @@
                   </div>
                 </div>
               </div>
+
               <!-- New Poster -->
               <div class="news-poster d-none d-lg-block">
                 <img src="assets/img/news/news_card.jpg" alt="" />
               </div>
             </div>
           </div>
+
+          <!-- back btn -->
+          <div class="row">
+            <div class="col-2">
+              <router-link class="btn my-2" :to="{ name: 'home' }">Back</router-link>
+            </div>
+          </div>
+          <!-- back btn end  -->
         </div>
       </div>
       <!-- About US End -->
@@ -94,6 +114,7 @@
 import axios from "axios";
 import { onMounted, ref } from "vue";
 import { useRoute } from "vue-router";
+import { mapGetters } from "vuex";
 
 export default {
   name: "PostDetailView",
@@ -129,6 +150,9 @@ export default {
     });
 
     return { getpostData, post, category };
+  },
+  computed: {
+    ...mapGetters(["getToken"]),
   },
 };
 </script>

@@ -4,6 +4,24 @@
       <!-- Whats New Start -->
       <section class="whats-news-area pt-50 pb-20">
         <div class="container">
+          <!-- login section -->
+          <div class="row">
+            <div class="col-lg-12">
+              <div class="d-sm-block d-lg-flex justify-content-between my-3">
+                <div class="btn btn-blue">
+                  <router-link :to="{ name: 'home' }">Home</router-link>
+                </div>
+                <div class="btn btn-blue" v-if="!getToken">
+                  <router-link :to="{ name: 'login' }">Login</router-link>
+                </div>
+                <div class="btn btn-blue" v-if="getToken">
+                  <router-link :to="{ name: 'logoutAction' }">Logout</router-link>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- login section end -->
+
           <div class="row">
             <div class="col-lg-12">
               <div class="row d-flex justify-content-between">
@@ -47,6 +65,7 @@
                   </div>
                 </div>
               </div>
+
               <!-- search bar -->
               <div class="row">
                 <div class="col-3 offset-9">
@@ -67,8 +86,31 @@
                   </div>
                 </div>
               </div>
+              <!-- search bar end-->
+
               <div class="row">
-                <div class="col-12">
+                <!-- when have not token -->
+                <div class="col-12" v-if="!getToken">
+                  <div class="min-vh-100">
+                    <div class="card my-4">
+                      <div class="card-header">
+                        <div class="alert alert-danger mt-3">
+                          <h4>
+                            You have not permission!
+                            <strong class="text-danger">
+                              <router-link :to="{ name: 'login' }"
+                                >Login First
+                              </router-link>
+                            </strong>
+                          </h4>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <!-- when have not token end -->
+
+                <div class="col-12" v-if="getToken">
                   <!-- Nav Card -->
                   <div class="tab-content" id="nav-tabContent">
                     <!-- card one -->
@@ -104,7 +146,7 @@
                               <div class="what-cap">
                                 <span class="color1">{{ post.title }}</span>
                                 <h4>
-                                  <a href="details.html">{{ post.title }}</a>
+                                  <!-- <a href="details.html">{{ post.title }}</a> -->
                                   <router-link
                                     :to="{ name: 'postDetail', params: { id: post.id } }"
                                   >
@@ -170,6 +212,7 @@
 import router from "@/router";
 import axios from "axios";
 import { onMounted, ref } from "vue";
+import { mapGetters } from "vuex";
 
 // @ is an alias to /src
 
@@ -229,6 +272,7 @@ export default {
       posts.value = res.data.data;
     };
 
+    // search by gategory
     const categorySearch = async (category) => {
       const res = await axios.post(`http://localhost:8000/api/categories/search`, {
         key: category,
@@ -265,6 +309,9 @@ export default {
       categorySearch,
       // postDetail,
     };
+  },
+  computed: {
+    ...mapGetters(["getToken", "getUserData"]),
   },
 };
 </script>
